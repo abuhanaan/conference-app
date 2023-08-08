@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useContext, useReducer } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useReducer,
+  useCallback,
+} from 'react';
 import { Header } from './Header';
 import { Menu } from './Menu';
 import SpeakerData from './SpeakerData';
@@ -39,7 +45,7 @@ const Speakers = () => {
     console.log('cleanup');
   }, []);
 
-  const heartFavoriteHandler = (e, favoriteValue) => {
+  const heartFavoriteHandler = useCallback((e, favoriteValue) => {
     e.preventDefault();
     const sessionId = parseInt(e.target.attributes['data-sessionid'].value);
 
@@ -47,15 +53,7 @@ const Speakers = () => {
       type: favoriteValue === true ? 'favorite' : 'unfavorite',
       sessionId: sessionId,
     });
-    // setSpeakerList(
-    //   speakerList.map((item) => {
-    //     if (item.id === sessionId) {
-    //       return { ...item, favorite: favoriteValue };
-    //     }
-    //     return item;
-    //   }),
-    // );
-  };
+  }, []);
 
   const speakerListFiltered = isLoading
     ? []
