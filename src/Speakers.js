@@ -1,58 +1,24 @@
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useReducer,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useState, useContext, useCallback, useMemo } from 'react';
 import { Header } from './Header';
 import { Menu } from './Menu';
-import SpeakerData from './SpeakerData';
 import SpeakerDetail from './SpeakerDetail';
 import { ConfigContext } from './App';
-import speakersReducer from './speakersReducer';
+import speakerData from './SpeakerData';
+import useSpeakerDataManager from './useSpeakerDataManager';
 
 const Speakers = () => {
-  // const [isLoading, setIsLoading] = useState(true);
-
-  const [isLoading, setIsLoading] = useReducer((state, action) => action, true);
-
-  // const [speakerList, setSpeakerList] = useState([]);
-
-  const [speakerList, dispatch] = useReducer(speakersReducer, []);
-
   const [speakingSaturday, setSpeakingSaturday] = useState(true);
   const [speakingSunday, setSpeakingSunday] = useState(true);
-
   const context = useContext(ConfigContext);
 
-  useEffect(() => {
-    setIsLoading(true);
-    new Promise(function (resolve) {
-      setTimeout(function () {
-        resolve();
-      }, 1000);
-    }).then(() => {
-      setIsLoading(false);
-    });
-    dispatch({
-      type: 'setSpeakerList',
-      data: SpeakerData,
-    });
-    // setSpeakerList(SpeakerData);
-
-    // second function when component unmounts
-    console.log('cleanup');
-  }, []);
-
+  const { isLoading, speakerList, dispatch } = useSpeakerDataManager();
   const heartFavoriteHandler = useCallback((e, favoriteValue) => {
     e.preventDefault();
     const sessionId = parseInt(e.target.attributes['data-sessionid'].value);
 
     dispatch({
       type: favoriteValue === true ? 'favorite' : 'unfavorite',
-      sessionId: sessionId,
+      id: sessionId,
     });
   }, []);
 
@@ -121,21 +87,19 @@ const Speakers = () => {
         </div>
         <div className="row">
           <div className="card-deck">
-            {speakerListFiltered.map(
-              ({ id, firstName, lastName, favorite, bio }) => {
-                return (
-                  <SpeakerDetail
-                    key={id}
-                    id={id}
-                    favorite={favorite}
-                    lastName={lastName}
-                    bio={bio}
-                    onHeartFavoriteHandler={heartFavoriteHandler}
-                    firstName={firstName}
-                  />
-                );
-              },
-            )}
+            {speakerData.map(({ id, firstName, lastName, favorite, bio }) => {
+              return (
+                <SpeakerDetail
+                  key={id}
+                  id={id}
+                  favorite={favorite}
+                  lastName={lastName}
+                  bio={bio}
+                  onHeartFavoriteHandler={heartFavoriteHandler}
+                  firstName={firstName}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
