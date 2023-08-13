@@ -1,12 +1,12 @@
-import React, { useState, useContext, useCallback, useMemo } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
+
 import { Header } from './Header';
 import { Menu } from './Menu';
 import SpeakerDetail from './SpeakerDetail';
 import { ConfigContext } from './App';
-import speakerData from './SpeakerData';
 import useSpeakerDataManager from './useSpeakerDataManager';
 
-const Speakers = () => {
+const Speakers = ({}) => {
   const [speakingSaturday, setSpeakingSaturday] = useState(true);
   const [speakingSunday, setSpeakingSunday] = useState(true);
   const context = useContext(ConfigContext);
@@ -17,9 +17,14 @@ const Speakers = () => {
     toggleSpeakerFavorite,
   } = useSpeakerDataManager();
 
+  const handleChangeSaturday = () => {
+    setSpeakingSaturday(!speakingSaturday);
+  };
+  const handleChangeSunday = () => {
+    setSpeakingSunday(!speakingSunday);
+  };
   const heartFavoriteHandler = useCallback((e, speakerRec) => {
     e.preventDefault();
-
     toggleSpeakerFavorite(speakerRec);
   }, []);
 
@@ -44,21 +49,14 @@ const Speakers = () => {
 
   const speakerListFiltered = isLoading ? [] : newSpeakerList;
 
-  const handleChangeSaturday = () => {
-    setSpeakingSaturday(!speakingSaturday);
-  };
+  if (isLoading) return <div>Loading...</div>;
 
-  const handleChangeSunday = () => {
-    setSpeakingSunday(!speakingSunday);
-  };
-
-  if (isLoading) return <div>Looading...</div>;
   return (
-    <>
+    <div>
       <Header />
       <Menu />
       <div className="container">
-        <div className="btn-toolbar margintopbottom5 checkbox-bigger">
+        <div className="btn-toolbar  margintopbottom5 checkbox-bigger">
           {context.showSpeakerSpeakingDays === false ? null : (
             <div className="hide">
               <div className="form-check-inline">
@@ -88,7 +86,7 @@ const Speakers = () => {
         </div>
         <div className="row">
           <div className="card-deck">
-            {speakerData.map((speakerRec) => {
+            {speakerListFiltered.map((speakerRec) => {
               return (
                 <SpeakerDetail
                   key={speakerRec.id}
@@ -100,7 +98,7 @@ const Speakers = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
